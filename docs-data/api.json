@@ -1,0 +1,20 @@
+[
+  {
+    "id": "mod.server.component.itemCompServer.ItemCompServer.GetContainerItem",
+    "name": "GetContainerItem", "slug": "get-container-item", "side": "server", "kind": "method",
+    "category": "Item", "namespace": "mod.server.component.itemCompServer.ItemCompServer",
+    "description": { "zh": "获取容器内的物品", "en": "Gets an item from a container." },
+    "parameters": [{ "name": "pos", "type": "tuple(int,int,int)", "description": { "zh": "容器位置" } }],
+    "source": { "title": "NetEase Minecraft Developer Documentation" }
+  },
+  {
+    "id": "mod.common.system.RegisterSystem", "name": "RegisterSystem", "slug": "register-system", "side": "both", "kind": "method",
+    "category": "System", "namespace": "mod.common.system", "description": { "zh": "注册自定义系统" }, "parameters": [],
+    "source": { "title": "NetEase Minecraft Developer Documentation" }
+  },
+  {
+    "id": "mod.client.component.item.ChangeItemTexture", "name": "ChangeItemTexture", "slug": "change-item-texture", "side": "client", "kind": "method",
+    "category": "Item", "namespace": "mod.client.component.item", "description": { "zh": "修改物品贴图" }, "parameters": [],
+    "source": { "title": "NetEase Minecraft Developer Documentation" }
+  }
+]

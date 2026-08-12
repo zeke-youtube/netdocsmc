@@ -1,0 +1,2 @@
+import entries from "../../docs-data/api.json"; import type { ApiEntry } from "../../src/types/docs"; import { validateEntries } from "./validate";
+const warnings = validateEntries(entries as ApiEntry[], true); for (const warning of warnings) console.warn(`[${warning.code}] ${warning.record}: ${warning.message}`); if (warnings.length) process.exitCode = 1; else console.log(`Validated ${entries.length} documentation entries.`);
