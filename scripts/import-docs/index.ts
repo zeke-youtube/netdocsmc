@@ -1,0 +1,7 @@
+import { readFile, writeFile } from "node:fs/promises";
+import { extname, resolve } from "node:path";
+import { parseText } from "./parsers/text"; import { parseJson } from "./parsers/json"; import { parseHtml } from "./parsers/html";
+import { normalizeRecord } from "./normalize"; import { validateEntries } from "./validate";
+const [inputPath, outputPath = "docs-data/imported.json"] = process.argv.slice(2);
+if (!inputPath) { console.error("Usage: npm run import:docs -- <input.{txt,json,html}> [output.json]"); process.exitCode = 1; }
+else { const absolute = resolve(inputPath); const input = await readFile(absolute, "utf8"); const parser = extname(inputPath).toLowerCase() === ".json" ? parseJson : /\.html?$/.test(inputPath) ? parseHtml : parseText; const parsed = parser(input, inputPath); const normalized = parsed.records.map((raw, index) => normalizeRecord(raw, `${inputPath}#${index + 1}`)); const entries = normalized.flatMap((item) => item.entry ? [item.entry] : []); const warnings = [...parsed.warnings, ...normalized.flatMap((item) => item.warnings), ...validateEntries(entries, true)]; await writeFile(resolve(outputPath), `${JSON.stringify(entries, null, 2)}\n`); for (const warning of warnings) console.warn(`[${warning.code}] ${warning.record ?? inputPath}: ${warning.message}`); console.log(`Imported ${entries.length} entries with ${warnings.length} warnings to ${outputPath}`); }

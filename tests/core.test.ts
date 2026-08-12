@@ -1,0 +1,9 @@
+import { describe, expect, it } from "vitest";
+import { createSlug } from "../src/lib/slug"; import { searchEntries } from "../src/features/search/search"; import { parseText } from "../scripts/import-docs/parsers/text"; import { normalizeRecord } from "../scripts/import-docs/normalize"; import { validateEntries } from "../scripts/import-docs/validate"; import type { ApiEntry } from "../src/types/docs";
+const entry = (name: string, extra: Partial<ApiEntry> = {}): ApiEntry => ({ id: name, name, slug: createSlug(name), side: "unknown", kind: "method", description: {}, parameters: [], ...extra });
+describe("documentation domain logic", () => {
+  it("creates stable kebab-case slugs", () => expect(createSlug("GetContainerItem")).toBe("get-container-item"));
+  it("prioritizes exact and prefix API names", () => { const results = searchEntries([entry("ContainerFactory"), entry("GetContainerItem", { description: { en: "container" } }), entry("Container")], "container"); expect(results.map((result) => result.entry.name)).toEqual(["Container", "ContainerFactory", "GetContainerItem"]); });
+  it("parses and normalizes the representative text format without changing types", () => { const parsed = parseText("GetContainerItem\n\n服务端\nmethod in mod.server.Item\n描述\n获取容器内的物品\n参数\n参数名\n数据类型\n说明\npos\ntuple(int,int,int)\n容器位置"); const normalized = normalizeRecord(parsed.records[0], "fixture"); expect(normalized.entry?.parameters[0]).toMatchObject({ name: "pos", type: "tuple(int,int,int)", description: { zh: "容器位置" } }); });
+  it("reports incomplete parameter rows and duplicates", () => { expect(parseText("Api\n服务端\n参数\n参数名\n数据类型\n说明\npos\ntuple").warnings[0].code).toBe("partial-parameter"); expect(validateEntries([entry("A"), entry("A")]).map((warning) => warning.code)).toEqual(["duplicate-id", "duplicate-slug"]); });
+});
